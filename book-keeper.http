@@ -1,0 +1,29 @@
+### Create New Book
+POST http://localhost:8080/book
+Content-Type: application/json
+
+{
+  "name": "A Volta dos Que Não Foram",
+  "publisher": "Abril",
+  "author": "Erico Veríssimo",
+  "units_available": 10
+}
+
+### List Books
+GET http://localhost:8080/book
+Content-Type: application/json
+
+{
+  "name": "A Volta dos Que Não Foram",
+  "publisher": "Abril",
+  "author": "Erico Veríssimo",
+  "units_available": 10
+}
+
+### Patch Book
+PATCH http://localhost:8080/book/96802c45-d1f6-4454-ac78-f6cf1153f99c
+Content-Type: application/json
+
+{
+  "name": "Ele Voltou"
+}

@@ -1,0 +1,25 @@
+[package]
+name = "book-keeper"
+version = "0.1.0"
+edition = "2021"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = "0.6.12"
+dotenvy = "0.15.7"
+envy = "0.4.2"
+hyper = { version = "0.14.25", features = ["full"] }
+serde = { version = "1.0.159", features = ["derive"] }
+sqlx = { version = "0.6.3", features = [
+    "runtime-tokio-rustls",
+    "uuid",
+    "bigdecimal",
+    "postgres",
+    "chrono",
+    "migrate",
+    "offline",
+] }
+tokio = { version = "1.27.0", features = ["full"] }
+tower = "0.4.13"
+uuid = { version = "1.1.2", features = ["serde", "v4"] }
+chrono = {version = "0.4.24", features = ["serde"] }

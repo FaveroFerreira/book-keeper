@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres
+    container_name: book_keeper_db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=book_keeper_db
