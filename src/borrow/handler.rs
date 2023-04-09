@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
-use axum::extract::State;
+use axum::extract::{Path, State};
 use axum::response::{IntoResponse, Response};
 use axum::Json;
 use hyper::StatusCode;
+use uuid::Uuid;
 
 use crate::book::db as book_db;
 use crate::book::model::Book;
@@ -33,6 +34,22 @@ pub async fn save_borrow(State(ctx): State<Arc<Ctx>>, Json(borrow): Json<BorrowD
     (StatusCode::CREATED, Json(borrow)).into_response()
 }
 
+pub async fn return_borrow(
+    State(ctx): State<Arc<Ctx>>,
+    Path(borrow_id): Path<Uuid>,
+) -> impl IntoResponse {
+    let opt_borrow = borrow_db::select_borrow_by_id(&ctx, borrow_id).await;
+
+    match opt_borrow {
+        Some(_) => {
+            borrow_db::delete_borrow_by_id(&ctx, borrow_id).await;
+
+            StatusCode::NO_CONTENT
+        }
+        None => StatusCode::NOT_FOUND,
+    }
+}
+
 fn book_is_out_of_stock(book: Book, pending_borrows: Vec<Borrow>) -> bool {
-    book.units_available as usize >= pending_borrows.len()
+    book.units_available as usize <= pending_borrows.len()
 }

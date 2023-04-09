@@ -13,7 +13,6 @@ pub struct Borrow {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BorrowDTO {
-    pub id: Uuid,
     pub return_date: NaiveDate,
     pub student_id: Uuid,
     pub book_id: Uuid,
