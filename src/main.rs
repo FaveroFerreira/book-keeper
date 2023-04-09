@@ -1,37 +1,25 @@
-use std::net::{Ipv4Addr, SocketAddr};
-use std::sync::Arc;
+use anyhow::Result;
+use axum::extract::State;
+use axum::response::IntoResponse;
 
-use axum::routing::{delete, get, patch, post, put};
-use axum::Router;
-
-use config::{Ctx, Environment};
-
-mod book;
-mod borrow;
-mod config;
-mod error;
-mod student;
+use book_keeper::config::environment::Environment;
+use book_keeper::config::observability::init_tracing;
+use book_keeper::core::state::SharedState;
+use tracing::debug;
 
 #[tokio::main]
-async fn main() {
-    let env = Environment::load();
+async fn main() -> Result<()> {
+    let _guard = init_tracing()?;
 
-    let ctx = Arc::new(Ctx::new(env).await);
+    let env = Environment::load()?;
 
-    config::apply_db_migrations(&ctx).await;
+    let _state = book_keeper::core::state::State::new(env).await?;
 
-    let router = Router::new()
-        .route("/book", get(book::handler::list_books))
-        .route("/book", post(book::handler::save_book))
-        .route("/book/:id", delete(book::handler::delete_book))
-        .route("/book/:id", put(book::handler::update_book))
-        .route("/book/:id", patch(book::handler::patch_book))
-        .route("/student", get(student::handler::list_students))
-        .route("/student", post(student::handler::save_student))
-        .with_state(ctx);
+    debug!("done");
 
-    axum::Server::bind(&SocketAddr::from((Ipv4Addr::UNSPECIFIED, 8080)))
-        .serve(router.into_make_service())
-        .await
-        .unwrap()
+    Ok(())
+}
+
+pub async fn test(State(_state): State<SharedState>) -> impl IntoResponse {
+    "Ok"
 }
