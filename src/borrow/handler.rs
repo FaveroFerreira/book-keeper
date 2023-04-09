@@ -15,7 +15,7 @@ use crate::error::Message;
 use crate::student::db as student_db;
 
 pub async fn save_borrow(State(ctx): State<Arc<Ctx>>, Json(borrow): Json<BorrowDTO>) -> Response {
-    let Some(_) = student_db::select_student_by_id(&ctx, borrow.student_id).await else {
+    let Some(student) = student_db::select_student_by_id(&ctx, borrow.student_id).await else {
         return (StatusCode::BAD_REQUEST, Message::json("student not found")).into_response();
     };
 
@@ -28,6 +28,13 @@ pub async fn save_borrow(State(ctx): State<Arc<Ctx>>, Json(borrow): Json<BorrowD
     if book_is_out_of_stock(book, pending_borrows) {
         return (StatusCode::BAD_REQUEST, Message::json("book out of stock")).into_response();
     }
+
+    let student_borrows = borrow_db::find_pending_borrows_by_student(&ctx, student.id).await;
+
+    if student_borrows.len() > 0 {
+        return (StatusCode::FORBIDDEN, Message::json("Students can borrow only one book per time.")).into_response();
+    }
+
 
     let borrow = borrow_db::insert_new_borrow(&ctx, borrow).await;
 
