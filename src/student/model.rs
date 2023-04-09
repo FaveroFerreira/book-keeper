@@ -15,5 +15,5 @@ pub struct Student {
     pub name: String,
     pub class: String,
     pub ra: String,
-    pub is_active: bool,
+    pub deleted: bool,
 }

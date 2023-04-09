@@ -26,6 +26,8 @@ async fn main() {
         .route("/book/:id", delete(book::handler::delete_book))
         .route("/book/:id", put(book::handler::update_book))
         .route("/book/:id", patch(book::handler::patch_book))
+        .route("/borrow", post(borrow::handler::save_borrow))
+        .route("/borrow/:id", delete(borrow::handler::return_borrow))
         .route("/student", get(student::handler::list_students))
         .route("/student", post(student::handler::save_student))
         .with_state(ctx);
